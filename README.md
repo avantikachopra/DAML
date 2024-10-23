@@ -1,2 +1,2 @@
 # DAML
-Reinforcement Learning Mancala Agent
+Duke Applied Machine Learning Projects
