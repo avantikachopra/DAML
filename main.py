@@ -28,10 +28,10 @@ def choose_action(Q, player):
             action = np.argmax(Q)+7
     return action
 
-# def update(Q, reward, action, action2):
-#     predict = Q[state][action]
-#     target = reward + gamma * Q[state2][action2]
-#     Q[state][action] += alpha * (target - predict)
+def update(Q, reward, action, action1):
+    predict = Q[action]
+    target = reward + gamma * Q[action1]
+    Q[action] += alpha * (target - predict)
 
 # Initializing the reward
 reward1 = 0
@@ -49,12 +49,11 @@ print("[p1,p1,p1,p1,p1,p1,s1,p2,p2,p2,p2,p2,p2,s2]")
 print(seeds)
 
 rounds = 0
+action1 = choose_action(Q1,1)
 
 while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
     #reward calculation +10 if last in player store, +5 if in player store, +1 if in player sink, +1 for each opposite collected seed, -1 if in opponent's sink
     if turn == 1:
-
-        action1 = choose_action(Q1,1)
 
         distribute1 = seeds[action1]
         seeds[action1] = 0
@@ -114,15 +113,19 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
         print("Turn = ", turn)
         print("")
 
+        naction1 = choose_action(Q1, 1)
 
+        update(Q1, reward1, action1, naction1)
+        action1 = naction1
 
-        # update Q with action1
+        rounds +=1
+
+        if(rounds == 1):
+            action2 = choose_action(Q2,2)
 
     else:
 
         #player 2
-
-        action2 = choose_action(Q2, 2)
 
         # action2 = int(input("Your Move = ")) #play yourself
         # print("")
@@ -175,6 +178,13 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
 
         else:
             turn = 1
+
+        rounds += 1
+
+        naction2 = choose_action(Q2, 2)
+
+        update(Q2, reward2, action2-7, naction2-7)
+        action2 = naction2
 
         sum = np.sum(seeds)
         print("Player 2")
