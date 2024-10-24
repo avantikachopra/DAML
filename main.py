@@ -94,7 +94,7 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
                 seeds[6] += seeds[opposite] + 1
                 reward1 += seeds[opposite] + 1
                 seeds[opposite] = 0
-            elif (seeds[state] != 6 and seeds[state] != 13):
+            elif (state != 6 and state != 13):
                 seeds[state] += 1
                 if(state >= 1 and state <= 5):
                     reward1 += 1
@@ -105,6 +105,7 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
         else:
             turn = 2
 
+        sum = np.sum(seeds)
         print("Player 1")
         print("Move = ", action1)
         print(seeds)
@@ -165,7 +166,7 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
                 seeds[12] += seeds[opposite] + 1
                 reward2 += seeds[opposite] + 1
                 seeds[opposite] = 0
-            elif(seeds[state] != 13 and seeds[state] != 6):
+            elif(state != 13 and state != 6):
                 seeds[state] += 1
                 if (state >= 7 and state <= 12):
                     reward1 += 1
@@ -175,6 +176,7 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
         else:
             turn = 1
 
+        sum = np.sum(seeds)
         print("Player 2")
         print("Move = ", action2)
         print(seeds)
