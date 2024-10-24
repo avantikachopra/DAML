@@ -11,21 +11,25 @@ states = 14
 actions = 6
 
 #Parameters
-epsilon = 1
+epsilon = 0.2
 alpha = 0.8
 gamma = 0.95
 
 def choose_action(Q, player):
     if player == 1:
         if np.random.uniform(0, 1) < epsilon:
-            action = random_integer = np.random.randint(0, 6)
+            action = np.random.randint(0, 6)
+            print("Random")
         else:
             action = np.argmax(Q)
+            print("Max")
     else:
         if np.random.uniform(0, 1) < epsilon:
-            action = random_integer = np.random.randint(7, 13)
+            action = np.random.randint(7, 13)
+            print("Random")
         else:
             action = np.argmax(Q)+7
+            print("Max")
     return action
 
 def update(Q, reward, action, action1):
@@ -55,6 +59,8 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
     #reward calculation +10 if last in player store, +5 if in player store, +1 if in player sink, +1 for each opposite collected seed, -1 if in opponent's sink
     if turn == 1:
 
+        temp1 = 0 #rewards1 temp
+
         distribute1 = seeds[action1]
         seeds[action1] = 0
         state = action1 + 1
@@ -67,11 +73,11 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
                     distribute1 -= 1
 
                 if(state == 6):
-                    reward1 += 5
+                    temp1 += 5
                 if(state >= 0 and state <= 5):
-                    reward1 += 1
+                    temp1 += 1
                 if(state >= 7 and state <= 12):
-                    reward1 -= 1
+                    temp1 -= 1
 
                 state += 1
                 if(state == 14):
@@ -79,11 +85,11 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
 
             if(state == 6): #check if ends on your store
                 seeds[6] += 1
-                reward1 += 10
+                temp1 += 10
                 turn = 1 #get another turn
             elif(state == 13): #move over if ends on opponents store
                 seeds[0] += 1
-                reward1 -= 1
+                temp1 -= 1
                 turn = 2 #opponents turn
             else:
                 turn = 2
@@ -91,19 +97,21 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
             if(seeds[state] == 0 and state >= 0 and state <= 5):
                 opposite = 12 - state
                 seeds[6] += seeds[opposite] + 1
-                reward1 += seeds[opposite] + 1
+                temp1 += seeds[opposite] + 1
                 seeds[opposite] = 0
             elif (state != 6 and state != 13):
                 seeds[state] += 1
+                temp1 += 1
                 if(state >= 1 and state <= 5):
-                    reward1 += 1
+                    temp1 += 1
                 elif(state >= 7 and state <= 12):
-                    reward1 -= 1
+                    temp1 -= 1
 
 
         else:
             turn = 2
 
+        reward1 += temp1
         sum = np.sum(seeds)
         print("Player 1")
         print("Move = ", action1)
@@ -115,7 +123,7 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
 
         naction1 = choose_action(Q1, 1)
 
-        update(Q1, reward1, action1, naction1)
+        update(Q1, temp1, action1, naction1)
         action1 = naction1
 
         rounds +=1
@@ -126,6 +134,8 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
     else:
 
         #player 2
+
+        temp2 = 0
 
         # action2 = int(input("Your Move = ")) #play yourself
         # print("")
@@ -142,11 +152,11 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
                     distribute2 -= 1
 
                 if (state == 13):
-                    reward2 += 5
+                    temp2 += 5
                 if (state >= 7 and state <= 12):
-                    reward2 += 1
+                    temp2 += 1
                 if (state >= 0 and state <= 5):
-                    reward2 -= 1
+                    temp2 -= 1
 
                 state += 1
                 if (state == 14):
@@ -155,11 +165,11 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
 
             if (state == 13):  # check if ends on your store
                 seeds[13] += 1
-                reward2 += 10
+                temp2 += 10
                 turn = 2  # get another turn
             elif (state == 6):  # move over if ends on opponents store
                 seeds[7] += 1
-                reward2 -= 1
+                temp2 -= 1
                 turn = 1 # opponents turn
             else:
                 turn = 1
@@ -167,7 +177,7 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
             if (seeds[state] == 0 and state >= 7 and state <= 12):
                 opposite = 12 - state
                 seeds[12] += seeds[opposite] + 1
-                reward2 += seeds[opposite] + 1
+                temp2 += seeds[opposite] + 1
                 seeds[opposite] = 0
             elif(state != 13 and state != 6):
                 seeds[state] += 1
@@ -180,10 +190,11 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
             turn = 1
 
         rounds += 1
+        reward2 += temp2
 
         naction2 = choose_action(Q2, 2)
 
-        update(Q2, reward2, action2-7, naction2-7)
+        update(Q2, temp2, action2-7, naction2-7)
         action2 = naction2
 
         sum = np.sum(seeds)
@@ -198,7 +209,7 @@ while np.sum(seeds[1:6]) > 0 or np.sum(seeds[7:13]) > 0:
 
 
 
-
+print("Rounds =", rounds)
 if(seeds[6] > seeds[13]):
     print("Player 1 wins! with ", seeds[6])
 else:
